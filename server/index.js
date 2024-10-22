@@ -1,42 +1,55 @@
-import express from "express";
+const express = require('express');
 const {MongoClient, Admin} = require('mongodb');
-
-async function main(app) {
-    const uri = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
-    const client = new MongoClient(uri);
-
-    try {
-        await client.connect();
-        await listDatabases(client);
-
-        app.get('/', (req, res) => {
-            res.send('MongoDB connected');
-        });
-
-    } catch(e) {
-        console.log(e);
-    } finally {
-        await client.close()
-    }
-}
-
-async function listDatabases(client) {
-    databasesList = await client.db().admin().listDatabases();
-
-    console.log("Databases: ");
-    databasesList.array.forEach(db => console.log(` - ${db.name}`));
-};
+require('dotenv').config()
 
 const app  = express();
-const port = 5000;
+const PORT = process.env.PORT || 8080;
+
+app.post("/post", (req, res) => {
+    console.log("Connected to React");
+    res.redirect("/");
+});
+
+app.post('/testPost', (req, res) => {
+    console.log("post test happened");
+
+    res.send({ message: 'Success'});
+});
 
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 });
-  
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+
+app.get('/getTest', (req, res) => {
+    console.log("\'/getTest\' endpoint used");
+    res.json({message: 'Data Data Data'});
 });
 
-main(app).catch(console.error);
+app.get('/word', async (req, res) => {
+    console.log('\'/word\' endpoint used');
+    const word = req.query;
+    console.log(word);
+
+    const uri = process.env.MONGODB_URI;
+    const client = new MongoClient(uri);
+    try {
+        const database = client.db("connections");
+        const document = database.collection("words");       
+
+        const data = await document.findOne(word);
+
+        console.log(data);
+        res.json(data);
+    } catch(e) {
+        console.log(e);
+    } finally {
+        console.log("Connection Closed")
+        await client.close()
+    }
+})
+  
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
+
 
