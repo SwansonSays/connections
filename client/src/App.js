@@ -23,20 +23,62 @@ const handleSubmit = async (e) => {
     if (response.ok) {
       const data = await response.json();
       setResults(data);
+      console.log(data);
     } else {
       setResults({ error: 'An error occurred while searching'});
     }
-    console.log(results);
+    
   } catch(error) {
     console.log(error);
     setResults({ error: 'An error occurred while searching'});
   }
 };
 
+function formatResults(){
+  let count = results.usages.length;
+  let usages = [];
+
+  for(let i = 0; i < count; i++) {
+    usages.push(
+      <div>
+        <div>{i+1}:</div>
+        <div>Puzzle Number: {results.usages[i].puzzle_number}</div>
+        <div>Description: {results.usages[i].description}</div>
+        <div>Color: {results.usages[i].color}</div>
+        <div>Grouped With: {results.usages[i].grouped_with[0]}, {results.usages[i].grouped_with[1]}, {results.usages[i].grouped_with[2]}</div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2>
+        Word: {results.word}
+      </h2>
+      <p>
+        Frequency: {results.frequency}
+      </p>
+      <p>
+        Color Frequency:
+        <p>Yellow: {results.color_freq.yellow}</p>
+        <p>Green: {results.color_freq.green}</p> 
+        <p>Blue: {results.color_freq.blue}</p> 
+        <p>Purple: {results.color_freq.purple}</p> 
+      </p>
+      <p>
+        <div>Usages:</div>
+        {usages}
+      </p>
+      
+    </div>
+  );
+};
+
 
   return (
     <div className="App">
-      <h1>Hello</h1>
+      <h1>Connections Data</h1>
+      {/*
       <form
         action='/testPost'
         method="post"
@@ -45,32 +87,11 @@ const handleSubmit = async (e) => {
           Connected?
         </button>
       </form>
-      
-      {results && <div>
-        <p>
-          ID: {results._id}
-        </p>
-        <p>
-          Word: {results.word}
-        </p>
-        <p>
-          Frequency: {results.frequency}
-        </p>
-        <p>
-          Color Frequency:
-          <p>Yellow: {results.color_freq.yellow}</p>
-          <p>Green: {results.color_freq.green}</p> 
-          <p>Blue: {results.color_freq.blue}</p> 
-          <p>Purple: {results.color_freq.purple}</p> 
-        </p>
-        <p>
-          Usages:
-          <p>Puzzle Number: {results.usages[0].puzzle_number}</p>
-          <p>Description: {results.usages[0].description}</p>
-          <p>Color: {results.usages[0].color}</p>
-          <p>Grouped With: {results.usages[0].grouped_with[0]}, {results.usages[0].grouped_with[1]}, {results.usages[0].grouped_with[2]}</p>
-        </p>
-      </div>}
+      */
+      }
+      <div>
+      {results && formatResults()}
+      </div>
 
       <form onSubmit={handleSubmit}>
           <input 
