@@ -1,5 +1,7 @@
 import './App.css';
 import { useEffect, useState } from 'react'
+import WordGraph from './Graph';
+import { SigmaContainer } from '@react-sigma/core';
 
 
 
@@ -10,6 +12,7 @@ function App() {
   const [top5, setTop5] = useState(null);
   const [mostUsed, setMostUsed] = useState(null);
   const [mostUsedAmount, setMostUsedAmount] = useState("");
+  const [graphData, setGraphData] = useState(null);
 
   /*
   useEffect(() => {
@@ -30,6 +33,11 @@ function App() {
     fetch('/wordGraph?startWord=BUCKS')
       .then(response => response.json());
     */
+
+    fetch('/wordGraph1')
+      .then((response) => response.json())
+      .then((data) => setGraphData(data))
+      .catch((error) => console.error('Error fetching graph data: ', error));
   }, []);
 
   function handleGraphClick() {
@@ -134,6 +142,16 @@ function getMostUsedResults() {
   return (
     <div className="App">
       <h1>Connections Data</h1>
+
+      <div>
+        <SigmaContainer style={{ height: "100vh", width: "100vh" }}>
+          {graphData ? <WordGraph data={graphData} /> : <p>Loading...</p>}
+        </SigmaContainer>
+      </div>
+
+
+
+
 
       <button onClick={handleGraphClick}>SHOW GRAPH</button>
 
