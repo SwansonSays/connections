@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SigmaContainer } from '@react-sigma/core';
 import WordGraph from '../components/GraphMaker';
+import NavBar from '../components/NavBar';
 
 function Graph() {
     const [graphData, setGraphData] = useState(null);
@@ -13,9 +14,13 @@ function Graph() {
       }, []);
 
     return(
-        <SigmaContainer style={{ height: "100vh", width: "100vh" }}>
-            {graphData ? <WordGraph data={graphData} /> : <p>Loading...</p>}
-        </SigmaContainer>
+        <div>
+            <NavBar />
+            <SigmaContainer style={{ height: "100vh", width: "100vh" }}>
+                {graphData ? <WordGraph data={graphData} /> : <p>Loading...</p>}
+            </SigmaContainer>
+        </div>
+
     );
 };
 

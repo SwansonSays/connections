@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import NavBar from '../components/NavBar';
 
 function Search() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -63,18 +64,21 @@ function Search() {
     };
 
     return(
-        <form onSubmit={handleSearchSubmit}>
-            <div>
-                {results && formatResults()}
-            </div>
-            <input 
-                name="query" 
-                placeholder='Enter word'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button type="submit">Search</button>
-        </form>
+        <div>
+            <NavBar />
+            <form onSubmit={handleSearchSubmit}>
+                <div>
+                    {results && formatResults()}
+                </div>
+                <input 
+                    name="query" 
+                    placeholder='Enter word'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button type="submit">Search</button>
+            </form>
+        </div>
     );
 };
 

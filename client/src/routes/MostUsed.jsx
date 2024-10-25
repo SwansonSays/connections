@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import NavBar from '../components/NavBar';
 
 function MostUsed() {
     const [mostUsed, setMostUsed] = useState(null);
@@ -39,6 +40,9 @@ function MostUsed() {
     };
 
     return(
+    
+      <div>
+        <NavBar />
         <form onSubmit={handleMostUsedSubmit}>
             <div>
             {mostUsed && getMostUsedResults()}
@@ -50,7 +54,8 @@ function MostUsed() {
                 onChange={(e) => setMostUsedAmount(e.target.value)}
             />
             <button type="submit">Most Used</button>
-      </form>
+        </form>
+      </div>
     );
 };
 
