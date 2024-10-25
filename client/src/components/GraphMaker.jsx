@@ -55,7 +55,7 @@ function WordGraph({ data }) {
                     gravity: 10
                 }
             });
-            //forceLayout.assign(graph);
+            forceLayout.assign(graph);
 
 /*
             const positions = forceAtlas2(graph, {

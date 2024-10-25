@@ -8,6 +8,8 @@ import MostUsed from './routes/MostUsed';
 import Search from './routes/Search';
 import Graph from './routes/Graph';
 import Admin from './routes/Admin';
+import ExpandingGraph from './components/ExpandingGraph';
+import { SigmaContainer } from '@react-sigma/core';
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,11 @@ const router = createBrowserRouter([
     path: "/Admin",
     element: <Admin />,
   },
+  {
+    path: "/ExpandingGraph",
+    element: <SigmaContainer style={{ height: "100vh", width: "100vh" }}><ExpandingGraph /></SigmaContainer>,
+  },
+
 ]);
 
 

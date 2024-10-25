@@ -177,6 +177,52 @@ app.get('/wordGraph', async (req, res) => {
     
 });
 
+app.get('/getConnectedNodes/:id', async (req, res) => {
+  console.log(``)
+  const {id} = req.params;
+  
+  const uri = process.env.MONGODB_URI;
+  const client = new MongoClient(uri);
+  try{
+    const database = client.db("connections");
+    const document = database.collection("words");
+
+    const result = await document.findOne({word: id});
+
+    let edges = [];
+    let nodes = [];
+
+    for(const usage of result.usages) {
+      for(const word of usage.grouped_with){
+        nodes.push({
+          word: word, 
+          label: word,
+          size: 5,
+        });
+
+        edges.push({
+          source: id, 
+          target: word, 
+          color: usage.color, 
+          label: `${usage.puzzle_number}: ${usage.description}`,
+        });
+      }
+    }
+
+    const nodeData = {
+      nodes: nodes,
+      edges: edges,
+    }
+
+    res.json(nodeData);
+
+  } catch(e) {
+    console.log(e);
+  } finally {
+    await client.close();
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });

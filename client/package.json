@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@react-sigma/core": "^4.0.3",
+    "@react-sigma/layout-circular": "^4.0.3",
+    "@react-sigma/layout-core": "^4.0.3",
+    "@react-sigma/layout-forceatlas2": "^4.0.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -17,6 +20,7 @@
     "react-router": "^6.27.0",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
+    "react-sigma": "^1.2.35",
     "sigma": "^3.0.0-beta.33",
     "web-vitals": "^2.1.4"
   },
