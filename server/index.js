@@ -65,12 +65,30 @@ app.get('/mostUsed', async (req, res) => {
     }
 });
 
+async function insertGraph(graph) {
+  console.log("Inserting Graph");
+  const uri = process.env.MONGODB_URI;
+  const client = new MongoClient(uri);
+  try {
+    const database = client.db("connections");
+    const document = database.collection("graph");
+    const result = await document.insertOne(graph);
+  } catch(e) {
+    console.log(e);
+  } finally {
+    console.log("Graph Inserted.");
+    await client.close();
+  }
+};
+
 async function bfs(startWord) {
     let graph = {
+        name: startWord,
         nodes: [],
         edges: [],
     };
     const visited = new Set();
+    const inQueue = new Set();
     const stack = [startWord];
 
     let count = 0;
@@ -81,8 +99,7 @@ async function bfs(startWord) {
         const database = client.db("connections");
         const document = database.collection("words");
 
-        //stack.length
-        while(count < 20) {
+        while(stack.length) {
             const currentNode = stack.pop();
     
             if( visited.has(currentNode)){
@@ -96,15 +113,17 @@ async function bfs(startWord) {
             const nodeData = await document.findOne({word: currentNode});
     
             for(const usage of nodeData.usages) {
-                for(const word of usage.grouped_with)
-                connectedWords.push({word: word, color: usage.color, puzzle: usage.puzzle_number});
+                for(const word of usage.grouped_with){
+                  connectedWords.push({word: word, color: usage.color, puzzle: usage.puzzle_number});
+                }
             }
     
             graph.nodes.push({word: currentNode, label: currentNode, size: nodeData.frequency});
     
             for(const word of connectedWords) {
-                if(!visited.has(word.word)) {
+                if(!visited.has(word.word) && !inQueue.has(word.word)) {
                     stack.push(word.word);
+                    inQueue.add(word.word);
                     graph.edges.push({source: currentNode, target: word.word, color: word.color, label: `Puzzle: ${word.puzzle}`});
                 }
             }
@@ -120,185 +139,42 @@ async function bfs(startWord) {
     }
 
 
-
+    
     console.log(graph);
-
+    insertGraph(graph);
     return graph;
 };
   
-app.get('/wordGraph', async (req, res) => {
+app.get('/createWordGraph', async (req, res) => {
     const startWord = req.query.startWord;
     graph = bfs(startWord);
+
     res.json(graph);
 });
 
-app.get('/wordGraph1', async (req, res) => {
-    const graph = {
-        nodes: [
-            { word: 'BUCKS', label: 'BUCKS', size: 5 },
-            { word: 'NETS', label: 'NETS', size: 5 },
-            { word: 'JAZZ', label: 'JAZZ', size: 10 },
-            { word: 'RAP', label: 'RAP', size: 5 },
-            { word: 'PUNK', label: 'PUNK', size: 10 },
-            { word: 'METAL', label: 'METAL', size: 10 },
-            { word: 'GOTH', label: 'GOTH', size: 5 },
-            { word: 'GLAM', label: 'GLAM', size: 5 },
-            { word: 'PLASTIC', label: 'PLASTIC', size: 10 },
-            { word: 'SUPPLE', label: 'SUPPLE', size: 5 },
-            { word: 'LIMBER', label: 'LIMBER', size: 5 },
-            { word: 'ELASTIC', label: 'ELASTIC', size: 5 },
-            { word: 'PAPER', label: 'PAPER', size: 30 },
-            { word: 'REPORT', label: 'REPORT', size: 10 },
-            { word: 'ESSAY', label: 'ESSAY', size: 5 },
-            { word: 'ARTICLE', label: 'ARTICLE', size: 10 },
-            { word: 'STORY', label: 'STORY', size: 10 },
-            { word: 'LEVEL', label: 'LEVEL', size: 35 },
-            { word: 'TENET', label: 'TENET', size: 5 },
-            { word: 'REFER', label: 'REFER', size: 5 }
-        ],
-        edges: [
+app.get('/wordGraph', async (req, res) => {
+  console.log("WORDGRAPH CALLD");
+  const uri = process.env.MONGODB_URI;
+  const client = new MongoClient(uri);
+  try {
+    const database = client.db("connections");
+    const document = database.collection("graph");
 
-              {
-                source: 'BUCKS',
-                target: 'JAZZ',
-                color: 'green',
-                label: 'Puzzle: 1'
-              },
-              {
-                source: 'BUCKS',
-                target: 'NETS',
-                color: 'green',
-                label: 'Puzzle: 1'
-              },
+    console.log("Searching DB");
 
-              {
-                source: 'NETS',
-                target: 'JAZZ',
-                color: 'green',
-                label: 'Puzzle: 1'
-              },
+    const result = await document.findOne({name: "SLEET"});
+    console.log("GOT GRAPH");
+    console.log("SENDING TO FRONTEND");
+    res.json(result);
+    console.log("RESULTS SENT")
+  } catch(e) {
+    console.log(e);
+  } finally {
+    await client.close();
+    console.log("CONNECTION CLOSED");
+  }
 
-
-              {
-                source: 'JAZZ',
-                target: 'PUNK',
-                color: 'yellow',
-                label: 'Puzzle: 21'
-              },
-              {
-                source: 'JAZZ',
-                target: 'RAP',
-                color: 'yellow',
-                label: 'Puzzle: 21'
-              },
-
-              {
-                source: 'RAP',
-                target: 'PUNK',
-                color: 'yellow',
-                label: 'Puzzle: 21'
-              },
-
-              {
-                source: 'PUNK',
-                target: 'GLAM',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-              {
-                source: 'PUNK',
-                target: 'GOTH',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-              {
-                source: 'PUNK',
-                target: 'METAL',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-              
-              {
-                source: 'METAL',
-                target: 'PAPER',
-                color: 'green',
-                label: 'Puzzle: 110'
-              },
-              {
-                source: 'METAL',
-                target: 'PLASTIC',
-                color: 'green',
-                label: 'Puzzle: 110'
-              },
-              {
-                source: 'METAL',
-                target: 'GLAM',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-              {
-                source: 'METAL',
-                target: 'GOTH',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-              {
-                source: 'GOTH',
-                target: 'GLAM',
-                color: 'blue',
-                label: 'Puzzle: 425'
-              },
-
-              {
-                source: 'PLASTIC',
-                target: 'PAPER',
-                color: 'green',
-                label: 'Puzzle: 110'
-              },
-              {
-                source: 'PLASTIC',
-                target: 'ELASTIC',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-              {
-                source: 'PLASTIC',
-                target: 'LIMBER',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-              {
-                source: 'PLASTIC',
-                target: 'SUPPLE',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-              {
-                source: 'SUPPLE',
-                target: 'ELASTIC',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-              {
-                source: 'SUPPLE',
-                target: 'LIMBER',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-              {
-                source: 'LIMBER',
-                target: 'ELASTIC',
-                color: 'green',
-                label: 'Puzzle: 259'
-              },
-
-
-              
-        ]
-    };
-
-
-    res.json(graph);
+    
 });
 
 app.listen(PORT, () => {

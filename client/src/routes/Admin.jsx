@@ -6,7 +6,7 @@ function Admin() {
   
 
   function handleGraphClick() {
-    fetch('/wordGraph?startWord=BUCKS')
+    fetch('/createWordGraph?startWord=SLEET')
       .then(response => response.json())
       .then((data) => setGraphData(data))
       .catch((error) => console.error('Error fetching graph data: ', error));
@@ -18,6 +18,7 @@ function Admin() {
       <div>
         <NavBar />
         <button onClick={handleGraphClick}>Get Graph Data</button>
+        {graphData && graphData.name}
       </div>
   );
 };

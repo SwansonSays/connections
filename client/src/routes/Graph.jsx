@@ -7,7 +7,7 @@ function Graph() {
     const [graphData, setGraphData] = useState(null);
 
     useEffect(() => {    
-        fetch('/wordGraph1')
+        fetch('/wordGraph')
           .then((response) => response.json())
           .then((data) => setGraphData(data))
           .catch((error) => console.error('Error fetching graph data: ', error));

@@ -2,8 +2,9 @@ import React, { useEffect, useMemo } from 'react';
 import { SigmaContainer, ControlsContainer, ZoomControl, useLoadGraph} from '@react-sigma/core';
 import '@react-sigma/core/lib/react-sigma.min.css';
 import Graph from 'graphology';
-//import { circlepack } from 'graphology-layout'
+import { circlepack } from 'graphology-layout'
 import forceLayout from 'graphology-layout-force';
+import forceAtlas2 from 'graphology-layout-forceatlas2';
 
 function WordGraph({ data }) {
     const loadGraph = useLoadGraph();
@@ -41,12 +42,13 @@ function WordGraph({ data }) {
                 });
             });
 
-            /*
+/* 
             const positions = circlepack(graph, {
                 hierarchyAttributes: ['degree', 'community']
             });
-            circlepack.assign(graph);
-            */
+            circlepack.assign(graph, positions);
+
+   */        
             forceLayout(graph, {
                 maxIterations: 50,
                 settings: {
@@ -55,6 +57,15 @@ function WordGraph({ data }) {
             });
             //forceLayout.assign(graph);
 
+/*
+            const positions = forceAtlas2(graph, {
+                iterations: 100,
+                settings: {
+                    gravity: 10
+                }
+            });
+            forceAtlas2.assign(graph, positions);
+            */
             loadGraph(graph);
         }
     }, [loadGraph, randomColor, data]);
