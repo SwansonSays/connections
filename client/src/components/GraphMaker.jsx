@@ -2,22 +2,22 @@ import React, { useEffect, useMemo } from 'react';
 import { SigmaContainer, ControlsContainer, ZoomControl, useLoadGraph} from '@react-sigma/core';
 import '@react-sigma/core/lib/react-sigma.min.css';
 import Graph from 'graphology';
-import { circlepack } from 'graphology-layout'
+//import { circlepack } from 'graphology-layout'
 import forceLayout from 'graphology-layout-force';
 
-const WordGraph = ({ data }) => {
+function WordGraph({ data }) {
     const loadGraph = useLoadGraph();
 
     const randomColor = useMemo(() => {
         return (): string => {
-          const digits = "0123456789abcdef";
-          let code = "#";
-          for (let i = 0; i < 6; i++) {
-            code += digits.charAt(Math.floor(Math.random() * 16));
-          }
-          return code;
+            const digits = "0123456789abcdef";
+            let code = "#";
+            for (let i = 0; i < 6; i++) {
+                code += digits.charAt(Math.floor(Math.random() * 16));
+            }
+            return code;
         };
-      }, []);
+    }, []);
 
     useEffect(() => {
         if(data) {
@@ -57,17 +57,15 @@ const WordGraph = ({ data }) => {
 
             loadGraph(graph);
         }
-    }, [loadGraph, data]);
+    }, [loadGraph, randomColor, data]);
 
 
     return (
-
-            <SigmaContainer style={{ height: "100vh", width: "100vh" }}>
-                <ControlsContainer position={"top-right"}>
-                    <ZoomControl />
-                </ControlsContainer>
-            </SigmaContainer>
-
+        <SigmaContainer style={{ height: "100vh", width: "100vh" }}>
+            <ControlsContainer position={"top-left"}>
+                <ZoomControl />
+            </ControlsContainer>
+        </SigmaContainer>
     );
 };
 
