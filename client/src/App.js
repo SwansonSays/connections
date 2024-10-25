@@ -21,11 +21,21 @@ function App() {
   */
 
   useEffect(() => {
+    /*
     fetch('/top5')
       .then(response => response.json())
       .then(data => setTop5(data));
+    
 
+    fetch('/wordGraph?startWord=BUCKS')
+      .then(response => response.json());
+    */
   }, []);
+
+  function handleGraphClick() {
+    fetch('/wordGraph?startWord=BUCKS')
+      .then(response => response.json());
+  };
 
 
 const handleSearchSubmit = async (e) => {
@@ -124,17 +134,10 @@ function getMostUsedResults() {
   return (
     <div className="App">
       <h1>Connections Data</h1>
-      {/*
-      <form
-        action='/testPost'
-        method="post"
-        className="form">
-        <button type="submit">
-          Connected?
-        </button>
-      </form>
-      */
-      }
+
+      <button onClick={handleGraphClick}>SHOW GRAPH</button>
+
+
       <form onSubmit={handleMostUsedSubmit}>
         <div>
           {mostUsed && getMostUsedResults()}

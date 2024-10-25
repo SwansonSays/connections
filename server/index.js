@@ -44,7 +44,7 @@ app.get('/word', async (req, res) => {
         console.log(e);
     } finally {
         console.log("Connection Closed")
-        await client.close()
+        await client.close();
     }
 });
 
@@ -71,7 +71,7 @@ app.get('/top5', async (req, res) => {
         console.log("Connection Closed")
         await client.close()
     }
-})
+});
 
 app.get('/mostUsed', async (req, res) => {
     console.log('***\'/mostUsed\' endpoint used***');
@@ -108,8 +108,73 @@ app.get('/mostUsed', async (req, res) => {
         console.log("Connection Closed")
         await client.close()
     }
-})
+});
+
+async function bfs(startWord) {
+    let graph = {
+        nodes: [],
+        edges: [],
+    };
+    const visited = new Set();
+    const stack = [startWord];
+
+    let count = 0;
+
+    while(stack.length) {
+        const currentNode = stack.pop();
+
+        if( visited.has(currentNode)){
+            console.log("SKIP: " + currentNode);
+            continue;
+        } 
+
+        visited.add(currentNode);
+        let connectedWords = [];
+
+        const uri = process.env.MONGODB_URI;
+        const client = new MongoClient(uri);
+
+        try {
+            const database = client.db("connections");
+            const document = database.collection("words");
+            
+            const nodeData = await document.findOne({word: currentNode});
+
+            for(const usage of nodeData.usages) {
+                for(const word of usage.grouped_with)
+                connectedWords.push(word);
+            }
+
+        } catch(e) {
+            console.log(e);
+        } finally {
+            await client.close();
+        }
+
+        graph.nodes.push({word: currentNode});
+
+        for(const word of connectedWords) {
+            if(!visited.has(word)) {
+                stack.push(word);
+                graph.edges.push({source: currentNode, target: word});
+            }
+        }
+
+        count++;
+        console.log("CURRENT WORD: " + currentNode + ", IN Q: " + stack.length + ", PROCESSED: " + count + ", TOTAL WORDS: " + 2787);
+    }
+
+    console.log(graph);
+
+    return graph;
+};
   
+app.get('/wordGraph', async (req, res) => {
+    const startWord = req.query.startWord;
+    graph = bfs(startWord);
+    res.json(graph);
+});
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
