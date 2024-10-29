@@ -24,6 +24,8 @@ function Search() {
     };
       
     function formatResults(){
+        //console.log(results.error);
+        //console.log(results.usages.length);
         let count = results.usages.length;
         let usages = [];
       
